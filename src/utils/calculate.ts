@@ -14,11 +14,11 @@ export const calculate = (
   const parsedListWidth = listWidth;
   const parsedPipeProfil = pipeWidth / 1000;
 
-  // рассчитывает площадь изделия и необходимое количество листов
+  // рассчитываем площадь изделия и необходимое количество листов
   const square = parseFloat((parsedWidth * parsedLength).toFixed(2));
-  const countLists = Math.ceil(square / parsedListWidth); //если листы возможно разрезать
+  const countLists = Math.ceil(square / parsedListWidth); //если листы возможно разрезать сколько угодно раз
 
-  // если листы можно резать только раз
+  // если листы можно резать только раз ниже приведен расчет
   /* const calcWidthListsV1 = Math.ceil(parsedWidth); 
   const calcLengthListsV1 = Math.ceil(parsedLength / parsedListWidth);
 
@@ -32,7 +32,7 @@ export const calculate = (
 
   const countLists = countListsV1 < countListsV2 ? countListsV1 : countListsV2; */
 
-  // рассчитывает количество секций
+  // рассчитываем количество секций и размер ячейки
   const countCellPerWidth = Math.ceil((parsedWidth - parsedPipeProfil) / (step + parsedPipeProfil));
   const countCellPerLength = Math.ceil((parsedLength - parsedPipeProfil) / (step + parsedPipeProfil));
   const cellSizeLength = parseFloat(
@@ -43,12 +43,12 @@ export const calculate = (
   );
   const cellSize = `${cellSizeLength}x${cellSizeWidth}м`;
 
-  // рассчитывает длинну труб
+  // рассчитываем длинну труб
   const pipeForLength = parsedLength * (countCellPerLength + 1);
   const pipeForWidth = cellSizeWidth * countCellPerWidth * (countCellPerLength + 1);
   const sumPipe = parseFloat((pipeForWidth + pipeForLength).toFixed(2));
 
-  // рассчитывает количество саморезов
+  // рассчитываем количество саморезов
   const countFix = Math.ceil(square * fixValue);
 
   // рассчитываем стоимость товаров

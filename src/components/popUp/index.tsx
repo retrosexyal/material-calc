@@ -36,7 +36,9 @@ const PopUp: React.FC<PopUpProps> = ({ type }) => {
             <StyledPopUpHeader>
               <select onChange={handleSort}>
                 {sortOptions.map((e) => (
-                  <option value={e.value}>{e.text}</option>
+                  <option key={e.text} value={e.value}>
+                    {e.text}
+                  </option>
                 ))}
               </select>
               <input type="text" placeholder="поиск материала" value={searchValue} onChange={handleSearch} />
