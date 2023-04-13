@@ -16,8 +16,10 @@ export const calculate = (
 
   // рассчитывает площадь изделия и необходимое количество листов
   const square = parseFloat((parsedWidth * parsedLength).toFixed(2));
-  //если листы возможно разрезать const countLists = Math.ceil(square / parsedListWidth); и всё что ниже не надо
-  const calcWidthListsV1 = Math.ceil(parsedWidth);
+  const countLists = Math.ceil(square / parsedListWidth); //если листы возможно разрезать
+
+  // если листы можно резать только раз
+  /* const calcWidthListsV1 = Math.ceil(parsedWidth); 
   const calcLengthListsV1 = Math.ceil(parsedLength / parsedListWidth);
 
   const calcWidthListsV2 = Math.ceil(parsedLength);
@@ -28,17 +30,22 @@ export const calculate = (
   let countListsV2 = calcWidthListsV2 * calcLengthListsV2;
   countListsV2 = countListsV2 * parsedListWidth >= square ? countListsV2 : Infinity;
 
-  const countLists = countListsV1 < countListsV2 ? countListsV1 : countListsV2;
+  const countLists = countListsV1 < countListsV2 ? countListsV1 : countListsV2; */
 
   // рассчитывает количество секций
-  const countCellPerWidth = Math.ceil(parsedWidth / step);
-  const widthWithoutPipe = parsedLength - countCellPerWidth * parsedPipeProfil;
-  const countCellPerLength = Math.ceil(widthWithoutPipe / step);
-  const cellSize = `${(parsedLength / countCellPerLength).toFixed(2)}x${(parsedWidth / countCellPerWidth).toFixed(2)}м`;
+  const countCellPerWidth = Math.ceil((parsedWidth - parsedPipeProfil) / (step + parsedPipeProfil));
+  const countCellPerLength = Math.ceil((parsedLength - parsedPipeProfil) / (step + parsedPipeProfil));
+  const cellSizeLength = parseFloat(
+    ((parsedLength - (countCellPerLength + 1) * parsedPipeProfil) / countCellPerLength).toFixed(2)
+  );
+  const cellSizeWidth = parseFloat(
+    ((parsedWidth - (countCellPerWidth + 1) * parsedPipeProfil) / countCellPerWidth).toFixed(2)
+  );
+  const cellSize = `${cellSizeLength}x${cellSizeWidth}м`;
 
   // рассчитывает длинну труб
-  const pipeForLength = parsedLength * countCellPerWidth;
-  const pipeForWidth = widthWithoutPipe * countCellPerLength;
+  const pipeForLength = parsedLength * (countCellPerLength + 1);
+  const pipeForWidth = cellSizeWidth * countCellPerWidth * (countCellPerLength + 1);
   const sumPipe = parseFloat((pipeForWidth + pipeForLength).toFixed(2));
 
   // рассчитывает количество саморезов
