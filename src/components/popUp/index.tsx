@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   StyleMaterialContainer,
   StyledButton,
@@ -8,42 +8,22 @@ import {
 } from './styled';
 import { useAppSelector } from '../../store';
 import MaterialCard from '../materialCard';
-import { IData } from '../../interfaces';
+
+import { useAppPopUpHandler } from '../hooks/useAppPopUpHandler';
+import { useAppSort } from '../hooks/useAppSort';
+import { useAppSearch } from '../hooks/useAppSearch';
+import { sortOptions } from '../../constants/constants';
 
 interface PopUpProps {
   type: string;
 }
-interface SortData {
-  name: keyof IData;
-  char: number;
-}
 
 const PopUp: React.FC<PopUpProps> = ({ type }) => {
-  const [isActive, setIsActive] = useState(false);
-  const [sort, setSort] = useState<SortData>({ name: 'price', char: 1 });
-  const [searchValue, setSearchValue] = useState('');
   const { data, isLoading } = useAppSelector((state) => state.data);
   const { list, pipe } = useAppSelector((state) => state.material);
-
-  const handleClick = (e: React.MouseEvent) => {
-    setIsActive((prev) => !prev);
-  };
-  const handlePropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-  useEffect(() => {
-    setIsActive(false);
-  }, [list, pipe]);
-
-  const handleSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const sortName = e.target.value.split(' ')[0];
-    const char = +e.target.value.split(' ')[1] || 1;
-    setSort({ name: sortName as keyof IData, char: char });
-  };
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-  };
+  const { isActive, handleClick, handlePropagation } = useAppPopUpHandler({ list, pipe });
+  const { handleSort, sortedData } = useAppSort(data);
+  const { searchValue, searchData, handleSearch } = useAppSearch(sortedData);
 
   return (
     <div>
@@ -55,24 +35,19 @@ const PopUp: React.FC<PopUpProps> = ({ type }) => {
           <StyledPopUpContent onClick={handlePropagation}>
             <StyledPopUpHeader>
               <select onChange={handleSort}>
-                <option value="price 1">Цена по возрастанию</option>
-                <option value="price -1">Цена по убыванию</option>
-                <option value="width 1">Ширина по возрастанию</option>
-                <option value="width -1">Ширина по убыванию</option>
-                <option value="material">Материал</option>
+                {sortOptions.map((e) => (
+                  <option value={e.value}>{e.text}</option>
+                ))}
               </select>
               <input type="text" placeholder="поиск материала" value={searchValue} onChange={handleSearch} />
             </StyledPopUpHeader>
             <StyleMaterialContainer>
               {!isLoading &&
-                [...data]
-                  .sort((a, b) => (a[sort.name]! > b[sort.name]! ? sort.char : -sort.char))
-                  .filter((e) => (e.name + e.material + e.price).toLowerCase().includes(searchValue.toLowerCase()))
-                  .map((e) => {
-                    if (e.type === type) {
-                      return <MaterialCard key={e.name} data={e} />;
-                    }
-                  })}
+                searchData.map((e) => {
+                  if (e.type === type) {
+                    return <MaterialCard key={e.name} data={e} />;
+                  }
+                })}
             </StyleMaterialContainer>
           </StyledPopUpContent>
         </StyledPopUpWrapper>
